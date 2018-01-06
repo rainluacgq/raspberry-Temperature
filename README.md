@@ -28,11 +28,13 @@ ls
 #### 2.温度读取
 单总线的传感器和树莓派温度读取比较简单
 ##### ①传感器
-```tfile = open("/sys/bus/w1/devices/28-0316a1019fff/w1_slave")```
+```
+tfile = open("/sys/bus/w1/devices/28-0316a1019fff/w1_slave")
 #读取文件所有内容
-	```text = tfile.read()```
+	text = tfile.read()
 #关闭文件
 	tfile.close()
+```
 ##### ②cpu
 ```
 file = open("/sys/class/thermal/thermal_zone0/temp")  
@@ -218,6 +220,7 @@ var chart = Highcharts.chart('container', {
     }
 });
 ```
+这是chart例程，直线图
 这是选取的是一个例程，注意data类型必须是数值型数据，更多实例参考http://www.hcharts.cn/
 至此主体工作完成。
 
