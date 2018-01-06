@@ -3,8 +3,8 @@
 主要完成树莓派CPU以及DS18B20温度显示并在网页上进行显示
 详见：http://rainlua1.vicp.io
 操作步骤
-一、本地数据采集与存储
-1.硬件布置
+## 一、本地数据采集与存储
+### 1.硬件布置
 1.1接线： VCC 接  3.3V 的gpio接口
       GND 接  GND 的gpio接口
       DQ  接   GPIO7（#4）的gpio接口（BCM编码）
@@ -15,7 +15,7 @@
 先进行内核升级，避免后面出现错误
 sudo apt-get update
 sudo apt-get upgrade
-2、确认设备是否生效	
+### 2、确认设备是否生效	
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
 cd /sys/bus/w1/devices/
@@ -38,13 +38,13 @@ file = open("/sys/class/thermal/thermal_zone0/temp")
 至此，对硬件的操作已经结束
 
 
-2.python-sqlite操作
+### 2.python-sqlite操作
 对温度采集数据之后之后可以进行数据存储
-2.1 模块安装
+#### 2.1 模块安装
 sudo apt-get install sqlite sqlite3 -y
 新建数据库：sqlite cpu.db
 sqlite 指令：./database 可查询.db数据库文件
-2.2数据库操作
+#### 2.2数据库操作
 CREATE TABLE COMPANY(
    ID INTEGER  PRIMARY KEY     AUTOINCREMENT,
    datetime           DATETIME    DEFAULT (datetime('now', 'localtime')),
@@ -52,7 +52,7 @@ CREATE TABLE COMPANY(
 );
 说明：PRIMARY KEY主键，AUTOINCREMENT自动增长
       datetime:datetime('now', 'localtime')中的localtime表示本时区时间，如果没有该参数则为格林尼治时间。
- 2.3 python 操作
+#### 2.3 python 操作
  因为 Python 2.5.x 以上版本默认自带了 sqlite3模块,所有这里不用安装sqlite模块
  import sqlite3即可
  conn=sqlite3.connect('home/pi/cpu.db')  
@@ -67,7 +67,7 @@ CREATE TABLE COMPANY(
 	VALUES((?),(?))",(temp1,)(temp2,));#插入变量方法
 说明：1.curs.execute游标，利用该API可以执行sql语句，sqlite操作方法与sql相似，加上"."即可
 2.CREATE TABLE IF NOT EXISTS Data避免重复创建Table
-3.数据插入操作
+### 3.数据插入操作
 3.1常量：c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
       VALUES (1, 'Paul', 32, 'California', 20000.00 )");
  2.单个变量：
@@ -78,7 +78,7 @@ CREATE TABLE COMPANY(
 	VALUES((?),(?))",(temp1,)(temp2,));#插入变量方法
 
 
-3.脚本设置
+### 3.脚本设置
 新建脚本：Temp.sh
 内容:sudo python Temp.sh
 增加权限：sudo chmod 777 Temp.sh
@@ -88,9 +88,9 @@ CREATE TABLE COMPANY(
 至此就可以进行数据存储功能了；
 
 
-二、服务器与网页显示
+## 二、服务器与网页显示
 我这里选用是sqlite+nginx+php5,原因就不赘述了
-1.nginx配置
+### 1.nginx配置
 首先安装nginx：
 sudo apt-get install nginx
 启动nginx服务
@@ -116,10 +116,10 @@ sudo nano /etc/nginx/sites-enabled/default
 sudo /etc/init.d/nginx reload
 可以看到debian欢迎界面即表示配置正确
 
-2.安装php-sqlite3模块
+### 2.安装php-sqlite3模块
 sudo apt-get install php-sqlite3
 
-3.php-sqlite3操作
+### 3.php-sqlite3操作
 <?php
    class MyDB extends SQLite3
    {
@@ -151,7 +151,7 @@ EOF;
 ?>
 说明：访问该网页报500server错误一般是数据库或者table表读取不对，增加路径即可
 
-3.画表格
+### 3.画表格
 进行画表格时，使用jQuery和chart.js这两个js函数库进行网页显示，但是因为chart.js版本迭代快，前后差别大，我就遇到了很多问题最后没有做成功
 这里选用了http://www.hcharts.cn/  进行画图
 如：
