@@ -4,17 +4,24 @@
 主要完成树莓派CPU以及DS18B20温度显示并在网页上进行显示.
 
 详见：http://rainlua1.vicp.io.
+
 操作步骤
 ## 一、本地数据采集与存储
 ### 1.硬件布置
-1.1接线： VCC 接  3.3V 的gpio接口
+#### 1.1接线：
+	VCC 接  3.3V 的gpio接口
+
       GND 接  GND 的gpio接口
+      
       DQ  接   GPIO7（#4）的gpio接口（BCM编码）
-1.2配置
+      
+#### 1.2配置
 先配置单总线设备使能
+
 在/boot/config.txt配置文件的最后添加如下内容： 
 ```dtoverlay=w1-gpio-pullup,gpiopin=4```
 1.3传感器操作
+
 先进行内核升级，避免后面出现错误
 ```sudo apt-get update```
 ```sudo apt-get upgrade```
@@ -98,11 +105,15 @@ c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
 
 ### 3.脚本设置
 新建脚本：Temp.sh
+
 内容:```sudo python Temp.sh```
+
 增加权限：```sudo chmod 777 Temp.sh```
+
 定时执行，```sudo crontab -e```
-最后一行添加：```*/30 * * * * /home/pi/Temp.sh```
-（注意空格）
+
+最后一行添加：```*/30 * * * * /home/pi/Temp.sh```（注意空格）
+
 至此就可以进行数据存储功能了；
 
 
