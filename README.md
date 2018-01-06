@@ -3,6 +3,7 @@
 主要完成树莓派CPU以及DS18B20温度显示并在网页上进行显示
 详见：http://rainlua1.vicp.io
 操作步骤
+一、本地数据采集与存储
 1.硬件布置
 1.1接线： VCC 接  3.3V 的gpio接口
       GND 接  GND 的gpio接口
@@ -52,5 +53,104 @@ CREATE TABLE COMPANY(
 说明：PRIMARY KEY主键，AUTOINCREMENT自动增长
       datetime:datetime('now', 'localtime')中的localtime表示本时区时间，如果没有该参数则为格林尼治时间。
  2.3 python 操作
- 因为 Python 2.5.x 以上版本默认自带了 sqlite3模块。
- 
+ 因为 Python 2.5.x 以上版本默认自带了 sqlite3模块,所有这里不用安装sqlite模块
+ import sqlite3即可
+ conn=sqlite3.connect('home/pi/cpu.db')  
+	curs=conn.cursor()     
+        # 插入数据库  
+	curs.execute('''CREATE TABLE IF NOT EXISTS Data  
+       (ID INTEGER  PRIMARY KEY     AUTOINCREMENT,  
+       datetime           DATETIME    DEFAULT (datetime('now', 'localtime')), 
+       cpu_temp            FLOAT     NOT NULL,
+	   sensor_temp			FLOAT		NOT NULL );''')  
+	curs.execute("INSERT INTO Data(cpu_temp,sensor_temp)\
+	VALUES((?),(?))",(temp1,)(temp2,));#插入变量方法
+说明：1.curs.execute游标，利用该API可以执行sql语句，sqlite操作方法与sql相似，加上"."即可
+2.CREATE TABLE IF NOT EXISTS Data避免重复创建Table
+3.数据插入操作
+3.1常量：c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
+      VALUES (1, 'Paul', 32, 'California', 20000.00 )");
+ 2.单个变量：
+ curs.execute("INSERT INTO Data(cpu_temp) VALUES((?))", (temp1,))
+ 其中：Table Name：Data	Table元素：cpu_temp	变量：temp1
+ 3.多个变量：
+ curs.execute("INSERT INTO Data(cpu_temp,sensor_temp)\
+	VALUES((?),(?))",(temp1,)(temp2,));#插入变量方法
+
+
+3.脚本设置
+新建脚本：Temp.sh
+内容:sudo python Temp.sh
+增加权限：sudo chmod 777 Temp.sh
+定时执行，sudo crontab -e
+最后一行添加：*/30 * * * * /home/pi/Temp.sh
+（注意空格）
+至此就可以进行数据存储功能了；
+
+
+二、服务器与网页显示
+我这里选用是sqlite+nginx+php5,原因就不赘述了
+1.nginx配置
+首先安装nginx：
+sudo apt-get install nginx
+启动nginx服务
+sudo /etc/init.d/nginx start
+安装php支持模块
+sudo apt-get install php5-fpm
+修改nginx配置，
+sudo nano /etc/nginx/sites-enabled/default
+添加index.php 
+使支持PHP
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+        
+                # With php5-cgi alone:
+        #       fastcgi_pass 127.0.0.1:9000;
+                # With php5-fpm:
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+        }
+	
+完成后执行
+sudo /etc/init.d/nginx reload
+可以看到debian欢迎界面即表示配置正确
+
+2.安装php-sqlite3模块
+sudo apt-get install php-sqlite3
+
+3.php-sqlite3操作
+<?php
+   class MyDB extends SQLite3
+   {
+      function __construct()
+      {
+         $this->open('test.db');
+      }
+   }
+   $db = new MyDB();
+   if(!$db){
+      echo $db->lastErrorMsg();
+   } else {
+      echo "Opened database successfully\n";
+   }
+
+   $sql =<<<EOF
+      SELECT * from COMPANY;
+EOF;
+
+   $ret = $db->query($sql);
+   while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
+      echo "ID = ". $row['ID'] . "\n";
+      echo "NAME = ". $row['NAME'] ."\n";
+      echo "ADDRESS = ". $row['ADDRESS'] ."\n";
+      echo "SALARY =  ".$row['SALARY'] ."\n\n";
+   }
+   echo "Operation done successfully\n";
+   $db->close();
+?>
+说明：访问该网页报500server错误一般是数据库或者table表读取不对，增加路径即可
+
+3.画表格
+进行画表格时，使用jQuery和chart.js这两个js函数库进行网页显示，但是因为chart.js版本迭代快，前后差别大，我就遇到了很多问题最后没有做成功
+这里选用了http://www.hcharts.cn/进行画图
