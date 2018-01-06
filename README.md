@@ -20,7 +20,7 @@
 
 在/boot/config.txt配置文件的最后添加如下内容： 
 ```dtoverlay=w1-gpio-pullup,gpiopin=4```
-1.3传感器操作
+#### 1.3传感器操作
 
 先进行内核升级，避免后面出现错误
 ```sudo apt-get update```
