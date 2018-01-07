@@ -94,8 +94,10 @@ CREATE TABLE COMPANY(
 说明：1.curs.execute游标，利用该API可以执行sql语句，sqlite操作方法与sql相似，加上"."即可
 
 2.CREATE TABLE IF NOT EXISTS Data避免重复创建Table
-参考：[菜鸟教程]（http://www.runoob.com/sqlite/sqlite-python.html）
 
+参考：1.[菜鸟教程]（http://www.runoob.com/sqlite/sqlite-python.html）
+
+2.[python sqlite树莓派操作]（http://blog.csdn.net/xukai871105/article/details/38356755）
 ### 3.数据插入操作
 3.1常量：
 ```
@@ -104,6 +106,7 @@ c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
 ```
  2.单个变量：
  ```curs.execute("INSERT INTO Data(cpu_temp) VALUES((?))", (temp1,))```
+ 
  其中：Table Name：Data	Table元素：cpu_temp	变量：temp1
  3.多个变量：
  ```
@@ -198,57 +201,97 @@ EOF;
 ### 3.画表格
 进行画表格时，使用jQuery和chart.js这两个js函数库进行网页显示，但是因为chart.js版本迭代快，前后差别大，我就遇到了很多问题最后没有做成功
 这里选用了http://www.hcharts.cn/  进行画图
+
+Highcharts 是一个用纯JavaScript编写的一个图表库。使用 json 格式配置,表格可导出为 PDF/ PNG/ JPG / SVG 格式
 如：
 ```
-var chart = Highcharts.chart('container', {
-    title: {
-        text: '2010 ~ 2016 年太阳能行业就业人员发展情况'
-    },
-    subtitle: {
-        text: '数据来源：thesolarfoundation.com'
-    },
-   
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
-    series: [{
-        name: '安装，实施人员',
-        data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-    }, {
-        name: '工人',
-        data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-    }, {
-        name: '销售',
-        data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-    }, {
-        name: '项目开发',
-        data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-    }, {
-        name: '其他',
-        data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-    }],
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Highcharts 教程 | 菜鸟教程(runoob.com)</title>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+<script language="JavaScript">
+$(document).ready(function() {
+   var title = {
+      text: '城市平均气温'   
+   };
+   var subtitle = {
+      text: 'Source: runoob.com'
+   };
+   var xAxis = {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+   };
+   var yAxis = {
+      title: {
+         text: 'Temperature (\xB0C)'
+      },
+      plotLines: [{
+         value: 0,
+         width: 1,
+         color: '#808080'
+      }]
+   };   
+
+   var tooltip = {
+      valueSuffix: '\xB0C'
+   }
+
+   var legend = {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'middle',
+      borderWidth: 0
+   };
+
+   var series =  [
+      {
+         name: 'Tokyo',
+         data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2,
+            26.5, 23.3, 18.3, 13.9, 9.6]
+      }, 
+      {
+         name: 'New York',
+         data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8,
+            24.1, 20.1, 14.1, 8.6, 2.5]
+      },
+      {
+         name: 'London',
+         data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 
+            16.6, 14.2, 10.3, 6.6, 4.8]
+      }
+   ];
+
+   var json = {};
+
+   json.title = title;
+   json.subtitle = subtitle;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;
+   json.tooltip = tooltip;
+   json.legend = legend;
+   json.series = series;
+
+   $('#container').highcharts(json);
 });
+</script>
+</body>
+</html>
 ```
 这是chart例程，直线图.这是选取的是一个例程，
-说明：1.data类型必须是数值型数据(不支持字符类型显示)，更多实例参考http://www.hcharts.cn/.
+###### 说明：
+1.data类型必须是数值型数据(不支持字符类型显示)，更多实例
+
+参考1.http://www.hcharts.cn/.
+
+2.http://www.runoob.com/highcharts/highcharts-line-basic.html
 
 2.series可以修改数据源的数量
+
 如单个数据源：
 ```
 series: [{
