@@ -120,16 +120,20 @@ c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
 ## 二、服务器与网页显示
 我这里选用是sqlite+nginx+php5,原因就不赘述了
 ### 1.nginx配置
+
 首先安装nginx：
 ```sudo apt-get install nginx```
+
 启动nginx服务
 ```sudo /etc/init.d/nginx start```
+
 安装php支持模块
 ```sudo apt-get install php5-fpm```
+
 修改nginx配置，
 ```sudo nano /etc/nginx/sites-enabled/default```
-添加index.php 
-使支持PHP
+
+添加index.php 使支持PHP
 ```
         # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
         #
