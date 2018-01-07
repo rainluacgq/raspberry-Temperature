@@ -1,7 +1,7 @@
 # raspberry-Temperature
-记录sqlite学习历程.
+记录本次课设过程.
 
-主要完成树莓派CPU以及DS18B20温度显示并在网页上进行显示.
+主要完成树莓派CPU以及DS18B20温度采集并在网页上进行显示.
 
 详见：http://rainlua1.vicp.io.
 
