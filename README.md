@@ -16,7 +16,7 @@
       DQ  接   GPIO7（#4）的gpio接口（BCM编码）
       
 #### 1.2配置
-先配置单总线设备使能
+先在raspi-config中配置单总线设备使能
 
 在/boot/config.txt配置文件的最后添加如下内容： 
 ```dtoverlay=w1-gpio-pullup,gpiopin=4```
@@ -26,7 +26,8 @@
 ```sudo apt-get update```
 ```sudo apt-get upgrade```
 
-### 2、确认设备是否生效	
+#### 1.4确认设备是否生效	
+加载驱动模块，找到设备号
 ```
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
@@ -34,7 +35,7 @@ cd /sys/bus/w1/devices/·
 ls
 ```
 复制设备号备用
-#### 2.温度读取
+#### 1.5.温度读取
 单总线的传感器和树莓派温度读取比较简单
 ##### ①传感器
 ```
@@ -44,6 +45,7 @@ tfile = open("/sys/bus/w1/devices/28-0316a1019fff/w1_slave")
 #关闭文件
 	tfile.close()
 ```
+读取的字符串经过截取，转化成对应的温度值
 ##### ②cpu
 ```
 file = open("/sys/class/thermal/thermal_zone0/temp")  
@@ -59,8 +61,9 @@ file = open("/sys/class/thermal/thermal_zone0/temp")
 对温度采集数据之后之后可以进行数据存储
 #### 2.1 模块安装
 ```sudo apt-get install sqlite sqlite3 -y```
-新建数据库：sqlite cpu.db
-sqlite 指令：./database 可查询.db数据库文件
+新建数据库：```sqlite cpu.db```
+
+sqlite 指令：```./database``` 可查询.db数据库文件
 #### 2.2数据库操作
 ```
 CREATE TABLE COMPANY(
@@ -69,8 +72,10 @@ CREATE TABLE COMPANY(
    temp            FlOAT     NOT NULL
 );
 ```
-说明：PRIMARY KEY主键，AUTOINCREMENT自动增长
-     ``` datetime:datetime('now', 'localtime')```中的localtime表示本时区时间，如果没有该参数则为格林尼治时间。
+说明：1.PRIMARY KEY主键，AUTOINCREMENT自动增长
+
+     2.```datetime:datetime('now', 'localtime')```中的localtime表示本时区时间，如果没有该参数则为格林尼治时间。我们可以在raspi-config修改时区，我选的是Shanghai.
+     
 #### 2.3 python 操作
  因为 Python 2.5.x 以上版本默认自带了 sqlite3模块,所有这里不用安装sqlite模块
  import sqlite3即可
@@ -84,10 +89,13 @@ CREATE TABLE COMPANY(
        cpu_temp            FLOAT     NOT NULL,
 	   sensor_temp			FLOAT		NOT NULL );''')  
 	curs.execute("INSERT INTO Data(cpu_temp,sensor_temp)\
-	VALUES((?),(?))",(temp1,)(temp2,));#插入变量方法
+	VALUES((?),(?))",(temp1,temp2,));#插入变量方法
 ```
 说明：1.curs.execute游标，利用该API可以执行sql语句，sqlite操作方法与sql相似，加上"."即可
+
 2.CREATE TABLE IF NOT EXISTS Data避免重复创建Table
+参考：[菜鸟教程]（http://www.runoob.com/sqlite/sqlite-python.html）
+
 ### 3.数据插入操作
 3.1常量：
 ```
