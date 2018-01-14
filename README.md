@@ -125,6 +125,8 @@ c.execute("INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) \
 
 最后一行添加：```*/30 * * * * /home/pi/Temp.sh```（注意空格）
 
+重启服务：```sudo /etc/init.d/cron restart ``` 
+
 至此就可以进行数据存储功能了；
 
 
